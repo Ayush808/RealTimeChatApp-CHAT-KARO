@@ -1,13 +1,21 @@
 const generateMessage = (username, text) => {
-    return{
+    return {
         username,
         text,
         createdAt: new Date().getTime()
     }
 }
 
+const generateHistory = (data) => {
+    return {
+        username: data.username,
+        text: data.text,
+        createdAt: data.createDate
+    }
+}
+
 const generateLocationMessage = (username, url) => {
-    return{
+    return {
         username,
         url,
         createdAt: new Date().getTime()
@@ -16,5 +24,6 @@ const generateLocationMessage = (username, url) => {
 
 module.exports = {
     generateMessage,
-    generateLocationMessage
+    generateLocationMessage,
+    generateHistory
 }

@@ -13,7 +13,7 @@ const locationMessageTemplate = document.querySelector('#location-message-templa
 const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
 
 // Options
-const {username, room} = Qs.parse(location.search, {ignoreQueryPrefix: true});
+const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true });
 
 //Enable Auto-scrolling 
 const autoscroll = () => {
@@ -39,11 +39,11 @@ const autoscroll = () => {
     }
 }
 
-socket.on('sendToAll', (msg)=>{
+socket.on('sendToAll', (msg) => {
     console.log(':) ', msg);
     const html = Mustache.render(messageTemplate, {
-        username : msg.username,
-        msg : msg.text,
+        username: msg.username,
+        msg: msg.text,
         createdAt: moment(msg.createdAt).format('hh:mm:a')
     })
     $messages.insertAdjacentHTML('beforeend', html)
@@ -51,18 +51,18 @@ socket.on('sendToAll', (msg)=>{
 });
 
 
-socket.on('locationMessage', (msg)=>{
+socket.on('locationMessage', (msg) => {
     console.log(msg);
     const html = Mustache.render(locationMessageTemplate, {
-        username : msg.username,
-        url : msg.url,
+        username: msg.username,
+        url: msg.url,
         createdAt: moment(msg.createdAt).format('hh:mm:a')
     })
     $messages.insertAdjacentHTML('beforeend', html);
     autoscroll()
 });
 
-socket.on('roomData', ({room, users}) => {
+socket.on('roomData', ({ room, users }) => {
     const html = Mustache.render(sidebarTemplate, {
         room,
         users
@@ -70,7 +70,7 @@ socket.on('roomData', ({room, users}) => {
     document.querySelector('#sidebar').innerHTML = html
 })
 
-document.querySelector('#form-submit').addEventListener('submit',(e)=>{
+document.querySelector('#form-submit').addEventListener('submit', (e) => {
     e.preventDefault();
 
     // disable the button till the location / message send to others so that to avoid redundency
@@ -79,11 +79,11 @@ document.querySelector('#form-submit').addEventListener('submit',(e)=>{
     // var message = document.querySelector('#msg').value;
     var message = e.target.elements.message.value;
 
-    socket.emit('sendData',message, (err)=>{
+    socket.emit('sendData', message, (err) => {
         $messageFormButton.removeAttribute('disabled');
-        $messageFormMessage.value='';
+        $messageFormMessage.value = '';
         $messageFormMessage.focus();
-        if(err){
+        if (err) {
             return console.log(err);
         }
         console.log('The message was Delivered');
@@ -91,26 +91,26 @@ document.querySelector('#form-submit').addEventListener('submit',(e)=>{
 })
 
 
-document.querySelector('#send-location').addEventListener('click', ()=>{
+document.querySelector('#send-location').addEventListener('click', () => {
     $locationButton.setAttribute('disabled', 'disabled');
-    if(!navigator.geolocation){
+    if (!navigator.geolocation) {
         return alert('GeoLocation Not supported by your Browser...!')
     }
-    navigator.geolocation.getCurrentPosition((position)=>{ 
-       // console.log(position);
+    navigator.geolocation.getCurrentPosition((position) => {
+        // console.log(position);
         socket.emit('sendLocation', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
-        },()=>{
+        }, () => {
             console.log('Location Shared :)');
             $locationButton.removeAttribute('disabled');
         })
     })
 })
 
-socket.emit('join', {username, room}, (error)=>{
-    if(error){
+socket.emit('join', { username, room }, (error) => {
+    if (error) {
         alert(error)
-        location.href='/';
+        location.href = '/';
     }
 });
